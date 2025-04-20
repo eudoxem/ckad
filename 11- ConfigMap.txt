@@ -1,0 +1,74 @@
+ConfigMap
+
+# Créer une ConfigMap depuis un literal (imperative)
+kubectl create configmap app-config --from-literal=APP_COLOR=blue --from-literal=APP_MODE=prod
+
+# Créer une ConfigMap depuis un fichier (imperative)
+kubectl create configmap app-config --from-file=app_config.properties
+
+# Créer une ConfigMap (declarative)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  APP_COLOR: blue
+  APP_MODE: prod
+
+# Liste des ConfigMap
+kubectl get configmaps
+
+# Liste de toutes les ConfigMap et du contenu de leur section data
+kubectl describe configmap
+
+# Liste d'une ConfigMap et du contenu de la section data
+kubectl describe configmap app-config
+
+# Kubernetes declarative way with ConfigMap (injection en tant que env)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+spec:
+  containers:
+    - name: simple-webapp-color
+      image: simple-webapp-color
+      ports:
+        - containerPort: 8080
+      envFrom:
+        - configMapRef:
+            name: app-config
+
+# Kubernetes declarative way with ConfigMap (injection en tant que single env)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+spec:
+  containers:
+    - name: simple-webapp-color
+      image: simple-webapp-color
+      ports:
+        - containerPort: 8080
+      env:
+        - name: APP_COLOR
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_COLOR
+
+# Kubernetes declarative way with ConfigMap (injection en tant que volume)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+spec:
+  containers:
+    - name: simple-webapp-color
+      image: simple-webapp-color
+      ports:
+        - containerPort: 8080
+  volumes:
+    - name: app-config-volume
+      configmap:
+          name: app-config

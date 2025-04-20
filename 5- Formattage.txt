@@ -1,0 +1,18 @@
+Formattage
+
+-o json: Output a JSON formatted API object
+-o yaml: Output a YAML formatted API object
+-o wide: Output in the plain-text format with any additional information
+-o name: Print only the resource name and nothing else
+
+# commande
+kubectl [command] [TYPE] [NAME] -o <output_format>
+
+# JSON
+kubectl create namespace test-123 --dry-run=client -o json
+
+# YAML
+kubectl create namespace test-123 --dry-run=client -o yaml
+
+# With additional details
+kubectl get pods -o wide

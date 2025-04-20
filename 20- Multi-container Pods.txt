@@ -1,0 +1,33 @@
+Multi-container Pods
+
+Lié à la volonté d'avoir plusieurs containers dans le même pod. Ces 2 containers
+ont le même cycle de vie (création/destruction en même temps), partagent le
+même réseau et le même espace de stockage (volumes).
+Par exemple, une application avec un système de logs
+
+# Pod definition
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp
+  labels:
+    name: simple-webapp
+spec:
+  containers:
+    - name: simple-webapp
+      image: simple-webapp
+      ports:
+        - containerPort: 8080
+    - name: log-agent
+      image: log-agent
+
+Patterns for multi-container pods
+- Ambassador: to change the connectivity to different databases depending on the
+              environment, you can outsource the logic so that in the code you
+              always reference localhost and then a proxy connects to the right
+              database
+- Adapter: before sending the logs to the central server, we would like to convert
+           them to a common format. The adapter processes the log before sending
+           to central server
+- Sidecar: deploying logging agent alongside a web server to collect logs and
+           send them to a central log server

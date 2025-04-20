@@ -1,0 +1,24 @@
+Monitor & Debug Applications
+
+Lié au monitoring de la consommation des ressources sur Kubernetes.
+- Node level metrics: number of nodes in the cluster
+- Performance metrics: CPU, memory, network, disk usage
+- Pod level metrics: number of pods, performance metrics of each pod
+
+Pas de solution de monitoring built-in disponible aujourd'hui avec Kubernetes.
+Il existe cependant des solutions open-source et propriétaires disponibles
+(Metrics Server remplaçant de Heapster, Prometheus, Elastic Stack, Datadog,
+Dynatrace)
+
+C'est l'agent Kubelet qui tourne sur chaque noeud qui permet de
+Kubelet contient le composant cAdvisor qui est responsable de collecter les
+métriques des pods et de les exposer à travers la Kubelet API et les rendre
+disponible pour Metrics Server.
+
+Après installation de Metrics Server, on peut maintenant visualiser les métriques.
+
+# Visualiser les performances du cluster
+kubectl top node
+
+# Visualiser les performances d'un pod
+kubectl top pod

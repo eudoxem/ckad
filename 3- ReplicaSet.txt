@@ -1,0 +1,69 @@
+ReplicationController and ReplicaSet
+
+Contrairement au ReplicationController, le ReplicaSet nécessite une section
+selector
+
+# ReplicationController definition
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: myapp-rc
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+  replicas: 3
+
+# ReplicaSet definition
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-replicaset
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  template
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
+
+# Crée un replicaset
+kubectl create -f replicaset-definition.yaml
+
+# Liste des ReplicationControllers
+kubectl get replicationcontroller
+
+# Liste des replicasets
+kubectl get replicaset
+kubectl get rs
+
+# Supprimer un replicaset
+kubectl delete replicaset myapp-replicaset
+
+# Update un replicaset
+kubectl replace -f replicaset-definition.yaml (modification de la props replicas)
+
+# Scale (augmenter le nombre de pods)
+kubectl scale --replicas=6 -f replicaset-definition.yaml
+kubectl scale --replicas=6 replicaset myapp-replicaset

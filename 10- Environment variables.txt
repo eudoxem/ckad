@@ -1,0 +1,57 @@
+Environment variables
+
+Elles sont utilisées pour injecter des valeurs dans les pods.
+Elles peuvent se mettre sous différentes formes:
+- key/value pair
+- ConfigMap
+- Secrets
+
+# Docker style
+docker run -e APP_COLOR=pink simple-webapp-color
+
+# Kubernetes declarative way with plain key value
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+spec:
+  containers:
+    - name: simple-webapp-color
+      image: simple-webapp-color
+      ports:
+        - containerPort: 8080
+      env:
+        - name: APP_COLOR
+          value: pink
+
+# Kubernetes declarative way with ConfigMap
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+spec:
+  containers:
+    - name: simple-webapp-color
+      image: simple-webapp-color
+      ports:
+        - containerPort: 8080
+      env:
+        - name: APP_COLOR
+          valueFrom:
+            configMapKeyRef:
+
+# Kubernetes declarative way with Secrets
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+spec:
+  containers:
+    - name: simple-webapp-color
+      image: simple-webapp-color
+      ports:
+        - containerPort: 8080
+      env:
+        - name: APP_COLOR
+          valueFrom:
+            secretKeyRef:

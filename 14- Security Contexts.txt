@@ -1,0 +1,51 @@
+Security Contexts
+
+Comme on le sait, dans Kubernetes, les containers sont encapsulés dans des pods.
+Les réglages de sécurité peuvent se configurer au niveau du container ou du pod.
+Si le réglage se fait au niveau du pod, celui-ci s'appliquera à tous les
+containers du pod.
+
+Si les réglages sont effectués à la fois au niveau du pod et du container, les
+réglages du container écrasent ceux du pod.
+
+# Pod definition (security settings at pod level)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-pod
+spec:
+  securityContext:
+    runAsUser: 1000
+  containers:
+    - name: ubuntu
+      image: ubuntu
+      command: ["sleep","3600"]
+
+# Pod definition (security settings at container level)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-pod
+spec:
+  containers:
+    - name: ubuntu
+      image: ubuntu
+      command: ["sleep","3600"]
+      securityContext:
+        runAsUser: 1000
+
+# Pod definition (security settings at container level + capabilities)
+# Capabilities only available at container level
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-pod
+spec:
+  containers:
+    - name: ubuntu
+      image: ubuntu
+      command: ["sleep","3600"]
+      securityContext:
+        runAsUser: 1000
+        capabilities:
+          add: ["MAC_ADMIN"]

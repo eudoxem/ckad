@@ -1,0 +1,23 @@
+Commands in Kubernetes
+
+# ARGS
+Tout ce qui est ajouté à la commande Docker va dans la property args
+
+docker run --name ubuntu-sleeper ubuntu-sleeper 10
+
+est l'équivalent de la définition suivante
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-sleeper-pod
+spec:
+  containers:
+    - name: ubuntu-sleeper
+      image: ubuntu-sleeper
+      args: ["10"]
+
+ARGS dans le pod definition file override ce qui est dans CMD dans le Dockerfile
+
+# COMMAND
+COMMAND dans le pod definition file override ce qui est dans ENTRYPOINT dans le Dockerfile

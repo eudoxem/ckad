@@ -1,0 +1,78 @@
+Namespace
+
+Comparable à des maisons familiales avec des ressources et des règles
+
+# Namespaces créés automatiquement
+Default: créé automatiquement par Kubernetes. Namespace utilisé par défaut
+kube-system: créé automatiquement par Kubernetes pour ses services internes
+kube-public: créé automatiquement par Kubernetes et regroupe les ressources
+qui doivent être mises à disposition pour tous les utilisateurs
+
+# Utilité
+Les namespaces permettent de mettre en place de l'isolation (dev/test/prod),
+avoir des policies différentes (qui peut faire quoi), assigner des quotas de
+ressources (resource limit)
+
+# Appel depuis le même namespace et appel vers un autre namespace
+Les objets d'un même namespace peuvent se contacter en utilisant simplement leur nom.
+mysql.connect("db-service")
+En revanche, un objet d'un namespace peut en contacter un autre. Pour cela,
+celui-ci doit suffixer le nom du service de la façon suivante:
+mysql.connect("db-service.dev.svc.cluster.local")
+service-name(db-service).namespace(dev).service(svc).domain(cluster.local)
+
+# Liste des Namespaces
+kubectl get namespaces
+kubectl get ns
+
+# Liste les pods d'un namespace spécifique
+kubectl get pods --namespace=kube-system
+kubectl get pods -n=kube-system
+
+# Création de pods dans un namespace spécifique
+kubectl create -f pod-definition.yaml --namespace=dev
+
+# Pod definition avec précision du namespace dans les metadata
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  namespace: dev
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+
+# Namespace definition
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+
+# Création d'un namespace
+kubectl create -f namespace-dev.yaml
+kubectl create namespace dev
+
+# Changement de namespace
+kubectl config set-context ${kubectl config current-context} --namespace=dev
+
+# Liste des pods dans tous les namespaces
+kubectl get pods --all-namespaces
+kubectl get pods -A
+
+# Resource quota definition
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+  namespace: dev
+spec:
+  hard:
+    pods: "10"
+    requests.cpu: "4"
+    request.memory: 5Gi
+    limits.cpu: "10"
+    limits.memory: 10Gi

@@ -1,0 +1,35 @@
+Rollout & Versioning
+
+La création d'un Deployment déclenche un rollout et chaque rollout crée une
+version de deployment. Ceci permet d'avoir la liste des changements et surtout
+de passer facilement d'une version à une autre (rollout) si nécessaire
+
+# Creation d'un deployment
+kubectl create deployment -f deployment-definition.yaml
+
+# Liste des deployments
+kubectl get deployments
+
+# Update
+kubectl apply -f deployment-definition.yaml
+En changeant dans le deployment-definition.yaml la version de l'image et en
+lançant cette commande, un rollout est déclenché
+
+# Statut d'un rollout
+kubectl rollout status deployment/myapp-deployment
+
+# Historique d'un rollout
+kubectl rollout history deployment/myapp-deployment
+
+# Rollback
+kubectl rollout undo deployment/myapp-deployment
+
+# Deployment strategies
+- Recreate strategy: destroy all the pods with older version, create all pods with newer version
+  => the application will be unavailable at certain time (not the default strategy)
+- Rolling update strategy: destroy each pod with older version and create pod with newer version one by one
+  => no unavailability (default strategy)
+- Blue/Green strategy: the new version (green) is deployed alongside the old version (blue).
+  All the traffic is routed to the blue pods and tests are run on the green pods. Once the tests
+  are passed, we switch traffic to the new version all at once
+- Canary strategy: we deploy a new version and only route a small percentage of traffic to it.

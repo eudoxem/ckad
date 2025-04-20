@@ -1,0 +1,32 @@
+Commands in Docker
+
+# Définir le programme qui doit être exécuté au démarrage du conteneur
+Pour cela, on utilise la commande CMD
+CMD ["nginx"]
+
+# Overrider la commande par défaut à l'exécution
+docker run ubuntu sleep 5
+
+# Définir la commande à utiliser dans le Dockerfile
+CMD command param 1 -> CMD sleep 5
+CMD ["command", "param1"] -> CMD ["sleep", "5"]
+
+# CMD
+CMD sleep 5 <- dans le Dockerfile
+docker run ubuntu-sleeper sleep 10 <- ligne de commande
+sleep 10 <- exécuté au démarrage
+
+# ENTRYPOINT
+Comme l'instruction CMD, elle permet de définir le programme qui va
+être exécuté. En plus, ce qui est saisi dans la ligne de commande est ajouté
+ENTRYPOINT["sleep"] <- dans le Dockerfile
+docker run ubuntu-sleeper 10 <- ligne de commande
+sleep 10 <- exécuté au démarrage
+
+# CMD vs ENTRYPOINT
+Avec CMD, ce qui est passé en paramètre remplace ce qui est mis dans le Dockerfile
+Avec ENTRYPOINT, ce qui est passé en paramètre est ajouté
+Si on souhaite avoir une valeur par défaut (dans le cas où aucun paramètre n'est passé),
+il faut mettre à la fois de CMD et ENTRYPOINT
+ENTRYPOINT["sleep"]
+CMD ["5"]

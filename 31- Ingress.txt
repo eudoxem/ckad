@@ -1,0 +1,211 @@
+Ingress
+
+www.my-online-store.com
+http://<node-ip>:38080
+
+Notre application est déployée dans Kubernetes et est exposée à l'extérieur via
+un service de type NodePort sur le port 38080.
+Pour que les utilisateurs n'aient pas à accéder à l'application en saisissant
+une adresse IP, il faut configurer un serveur DNS. Les utilisateurs peuvent
+désormais accéder à l'application en saisissant http://my-online-store.com:38080
+On ne souhaite pas que les utilisateurs se souviennent du numéro de port. Pour
+cela, on ajoute une nouvelle couche entre le serveur DNS et le cluster K8s. C'est
+un proxy-server qui va proxifier les requêtes sur le port 80 (port par défaut http)
+vers le port 38080 du cluster. On fait pointer le serveur DNS sur le proxy-server.
+Les utilisateurs pourront désormais saisir http://my-online-store.com. Ceci est
+valable quand on est on-premises.
+Si nous utilisons un provider cloud du style GCP, au lieu d'utiliser un service
+de type NodePort, on utilisera un service de type LoadBalancer. Kubernetes fera
+exactement tout ce qu'il fait pour les service NodePort (provisionning d'un port
+pour le service) mais en plus, il enverra une requête à GCP pour provisionner un
+load balancer pour le service. A la réception de cette requête, GCP déploiera une
+automatiquement un load balancer configuré pour router le trafic entrant. Le
+load balancer a une adresse IP externe qui pourra être donnée à tous les
+utilisateurs qui accèderont à l'application. Dans notre cas, le DNS pointera vers
+cette adresse IP. En gros, le proxy-server est remplacé par le load balancer qui
+lui-même écoute sur le port 80
+
+Le business s'étend et on souhaite mettre à disposition un nouveau service à
+l'adresse http://my-online-store.com/watch. Pour cela, on crée un nouveau déploiement,
+un nouveau NodePort ouvert vers l'extérieur (32282), un nouveau service de type
+LoadBalancer (nouveau GCP load balancer avec le DNS qui pointe vers cette IP).
+Dans le même temps, on voudrait que l'application historique soit accessible à
+http://my-online-store.com/wear
+On a maintenant besoin d'un autre composant (proxy ou load balancer) qui,
+en se basant sur l'URL, redirige le trafic vers la bonne application. On a aussi
+besoin d'activer le SSL afin que les utilisateurs puissent passer par du https.
+Afin de gérer toutes ces problématiques, il serait bien que ce soit centralisé,
+facilement maintenable et si possible de façon déclarative. C'est là qu'intervient
+l'ingress.
+
+Ingress permet aux utilisateurs d'accéder à l'application (ensemble de microservices)
+en utilisant une seule URL qui peut être configurée pour router le trafic vers
+différents services du cluster en se basant sur le path tout en implémentant par
+la même occasion du SSL. Il faut s'imaginer l'ingress comme étant une couche de
+load balancing construite dans le cluster K8s qui peut être configuré en utilisant
+des primitives K8s comme tout autre objet. L'ingress doit être exposé pour être
+accessible via un NodePort ou un cloud native load balancer (GCP par exemple)
+
+K8s supporte Ingress mais ne vient pas par défaut avec un Ingress controller.
+Il en existe plusieurs tels que GCE, Nginx, HAProxy, Traefic, Contour, Istio, Kong.
+GCE et Nginx sont actuellement supportés et maintenus par les projets K8s.
+Pour que ça marche, il faut soi-même déployer la solution choisie (Ingress controller)
+puis configurer un ensemble de routes (Ingress resources). Les ressources sont
+créées en utilisant des fichiers de définition yaml comme ceux utilisés pour les pods.
+Les Ingress controllers ont également une intelligence supplémentaire pour
+monitorer le cluster K8s pour des nouvelles définitions et/ou Ingress resources
+afin de configurer le Nginx en fonction
+
+L'Ingress controller est déployé comme toutes les autres ressources via un yaml.
+Il s'agit en fait d'un objet de type Deployment
+
+# Ingress controller definition
+--- Deployment
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: nginx-ingress
+  template
+    metadata:
+      labels:
+        name: nginx-ingress
+    spec:
+      containers:
+        - name: nginx-ingress-controller
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.21.0
+      args:
+        - /nginx-ingress-controller
+        - --configmap=$(POD_NAMESPACE)/nginx-configuration
+      env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+      ports:
+        - name: http
+          containerPort: 80
+        - name: https
+          containerPort: 443
+
+--- ConfigMap (pas besoin d'entrée à ce stade. Juste utilisé pour externaliser
+--- des données de config Nginx telles que err-log-path, keep-alive, ssl-protocols)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+
+--- Service (exposition d'un service de type NodePort)
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+    - port: 443
+      targetPort: 443
+      protocol: TCP
+      name: https
+  selector:
+    name: nginx-ingress
+
+--- Service account (nécessaire pour que le controller se connecte au cluster
+                     pour scruter les changements dans les rules et definitions)
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-serviceaccount
+
+
+Une Ingress resource est un ensemble de règles et de configurations appliquées
+à un Ingress controller. On peut configurer des règles pour dire de
+- router tout le trafic vers une seule application
+- router le trafic vers différentes applications en se basant sur l'URL
+- router le trafic en se basant sur le nom de domaine
+
+# Ingress resource definition file
+# Pas de rules puisque tout le trafic est routé vers l'application
+# On utilise des rules quand on veut router le trafic avec des conditions
+# Ancienne version
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+ name: ingress-wear
+spec:
+ backend:
+  serviceName: wear-service
+  servicePort: 80
+
+# Ingress avec des règles
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-wear-watch
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /wear
+        pathType: Prefix
+        backend:
+          service:
+            name: wear-service
+            port:
+              number: 80
+      - path: /watch
+        pathType: Prefix
+        backend:
+          service:
+            name: watch-service
+            port:
+              number: 80
+
+# Ingress avec des règles sur le host
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-wear-watch
+spec:
+  rules:
+  - host: wear.my-online-store.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wear-service
+            port:
+              number: 80
+  - host: watch.my-online-store.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: watch-service
+            port:
+              number: 80
+
+# Création des Ingress
+kubectl create -f ingress.yaml
+
+# Liste des Ingress
+kubectl get ingress
+
+# Détail des Ingress
+kubectl describe ingress ingress-wear-watch

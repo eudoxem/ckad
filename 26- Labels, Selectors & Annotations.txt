@@ -1,0 +1,14 @@
+Labels, Selectors & Annotations
+
+Les labels sont comme des tags qui permettent de typer des objets afin de pouvoir
+les regrouper et les filter plus facilement. Dans Kubernetes, l'association
+Label-Selector permet de connecter différents objets entre eux.
+
+Les labels sont mis dans la définition du pod sous metadata. Les selectors
+permettent de faire le lien entre objets en utilisant les labels.
+
+Les annotations quant à elles sont utilisées plutôt à des fins informatives
+(buildVersion, email contact, phone numbers, etc)
+
+# Lister les pods possédant un label particulier
+kubectl get pods  --selector app=App1

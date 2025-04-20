@@ -1,0 +1,28 @@
+Docker Security
+
+Contrairement aux VM, les containers ne sont pas totalement isolés de leur host
+Les containers et leurs hosts partagent le même kernel.
+
+Les containers sont isolés via l'utilisation de namespaces en Linux.
+Les process lancés par un container le sont dans son propre namespace.
+
+En listant les process du container, on voit uniquement ceux qui y sont lancés.
+En revanche, le listing des process du host montre tous les process y compris
+ceux du container.
+
+Par défaut, Docker fait tourner les container en tant que root. Mais, on peut
+forcer le user via la commande
+docker run --user=1000 ubuntu sleep 3600
+ou en utiliant USER 1000 dans le Dockerfile
+
+Le root user dans le container n'est pas tout à fait le root user du host.
+Il possède un subset des capacités du root Linux
+
+# Pour ajouter des capacités au root (limité) tournant le container, on peut
+docker run --cap-ad MAC_ADMIN ubuntu
+
+# Pour réduire des capacités au root (limité) tournant le container, on peut
+docker run --cap-drop KILL ubuntu
+
+# Pour faire tourner le container avec tous les privilèges, on peut
+docker run --privileged ubuntu

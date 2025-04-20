@@ -1,0 +1,70 @@
+Liveness Probes
+
+Permet de vérifier périodiquement que l'application est toujours fonctionnelle.
+Si le test échoue, l'application est considérée comme étant "Unhealthy" et
+est détruite et recréée
+
+Liveness Probes
+- HTTP test pour vérifier qu'une API est disponible
+- TCP test pour vérifier qu'une socket TCP est en écoute
+- Exécuter une commande à l'intérieur du container pour exécuter un script
+
+# Pod definition with HTTP probe
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp
+  labels:
+    name: simple-webapp
+spec:
+  containers:
+  - name: simple-webapp
+    image: simple-webapp
+    ports:
+      containerPort: 8080
+    livenessProbe:
+      httpGet:
+        path: /api/ready
+        port: 8080
+      # after how many seconds to probe
+      initialDelaySeconds: 10
+      # how often to probe
+      periodSeconds: 5
+      # to override the default 3 attempts
+      failureThreshold: 8
+
+# Pod definition with TCP probe
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp
+  labels:
+    name: simple-webapp
+spec:
+  containers:
+  - name: simple-webapp
+    image: simple-webapp
+    ports:
+      containerPort: 8080
+    readinessProbe:
+      tcpSocket:
+        port: 3306
+
+# Pod definition with executing command
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp
+  labels:
+    name: simple-webapp
+spec:
+  containers:
+  - name: simple-webapp
+    image: simple-webapp
+    ports:
+      containerPort: 8080
+    readinessProbe:
+      exec:
+        command:
+          - cat
+          - /app/is_ready

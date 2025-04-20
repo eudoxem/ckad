@@ -1,0 +1,39 @@
+Pods
+# Crée un pod puis déploie le conteneur Docker
+kubectl run nginx --image nginx
+
+# Supprime un pod
+kubectl delete pod nginx
+
+# Liste des pods
+kubectl get pods
+kubectl get po
+
+# Logs d'un pod
+kubectl logs nginx
+
+# Pod definition
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+
+# Crée un pod depuis un fichier
+kubectl create -f pod-definition.yaml
+
+# Obtenir des informations détaillées sur un pod
+kubectl describe pod myapp-pod
+
+# Editer un pod existant
+kubectl get pod nginx -o yaml > pod-definition.yaml
+
+# Crée un pod avec un service de type ClusterIP du même nom sur le port 80
+# avec le service exposé sur le port
+kubectl run httpd --image=httpd:alpine --port=8080 --expose=true

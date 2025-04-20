@@ -1,0 +1,35 @@
+Container Logging
+
+# Docker
+docker -f ecf
+
+# Kubernetes (-f to stream the logs)
+Avec un seul container dans le pod, inutile de préciser le container dont on
+veut streamer les logs
+kubectl logs -f event-simulator-pod
+
+Avec plusieurs containers dans le pod, il faut préciser explicitement le nom du
+container dont on veut streamer les logs
+kubectl logs -f event-simulator-pod event-simulator
+
+# Pod definition (single container in pod)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: event-simulator-pod
+spec:
+  containers:
+    - name: event-simulator
+      image: kodekloud/event-simulator
+
+# Pod definition (multiple containers in pod)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: event-simulator-pod
+spec:
+  containers:
+    - name: event-simulator
+      image: kodekloud/event-simulator
+    - name: image-processor
+      image: kodekloud/image-processor

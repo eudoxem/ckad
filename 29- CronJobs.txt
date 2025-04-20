@@ -1,0 +1,31 @@
+CronJobs
+
+Il s'agit de jobs qui peuvent être schédulés avec l'utilisation de la
+structure des crontab de Linux
+
+# CronJob definition
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: reporting-cron-job
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      completions: 3
+      parallelism: 3
+      template:
+        spec:
+          containers:
+            - name: reporting-tool
+              image: reporting-tool
+          restartPolicy: Never
+
+# Lister les cronjobs
+kubectl get cronjob
+
+# Voir le résultat du job
+kubectl logs math-add-job-1d87pn
+
+# Supprimer un job
+kubectl delete job math-add-job-1d87pn

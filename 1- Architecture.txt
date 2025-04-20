@@ -1,0 +1,11 @@
+Architecture Kubernetes
+
+Master Node:
+  - API Server (front-end pour Kubernetes)
+  - etcd (key-store value pour stocker les valeurs nécessaires à la gestion du cluster)
+  - Controller (cerveau de l'orchestration): replication controller par exemple
+  - Scheduler (distribution du travail entre les noeuds)
+
+Worker Node:
+  - Container Runtime (logiciel utilisé pour exécuter les conteneurs)
+  - Kubelet (agent tournant sur chaque noeud du cluster)

@@ -1,0 +1,137 @@
+Resource Requirements
+
+Lié à la quantité minimum de CPU et de mémoire nécessaires pour qu'un pod tourne.
+Connu sous le terme de resource request et utilisé par le scheduler pour
+déterminer le node sur lequel placer le pod.
+Par défaut un container n'a pas de limite de ressources si rien n'est spécifié.
+
+# Resources requests
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+  labels:
+    name: simple-webapp-color
+spec:
+  containers:
+    - name: simple-webapp-color
+      image: simple-webapp-color
+      ports:
+        - containerPort: 8080
+      resources:
+        requests:
+          memory: "4Gi"
+          cpu: 2
+
+# Resource CPU
+CPU: 1 => 100m (milli)
+La valeur la plus basse spécifiable est 0.1 ou 1m
+1 CPU = 1 AWS vCPU
+      = 1 GCP Core
+      = 1 Azure Core
+      = 1 Hyperthread
+
+# Resource Memory
+256 Mi (Mebibyte)
+1 G (Gigabyte) => 1 000 000 000 bytes
+1 M (Megabyte) => 1 000 000 bytes
+1 K (Kilobyte) => 1 000 bytes
+1 Gi (Gibibyte) => 1 073 741 824 bytes
+1 Mi (Mebibyte) => 1 048 576 bytes
+1 Ki (Kibibyte) => 1 024 bytes
+
+# Resources limits
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp-color
+  labels:
+    name: simple-webapp-color
+spec:
+  containers:
+    - name: simple-webapp-color
+      image: simple-webapp-color
+      ports:
+        - containerPort: 8080
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: 1
+        limits:
+          memory: "2Gi"
+          cpu: 2
+
+# Exceeding limits
+Le container ne peut pas aller au-delà de la limite fixée pour le CPU (throttling).
+En revanche, le pod peut utiliser plus de memory que la limite spécifiée.
+Si le pod utilise constamment plus de memory que sa limite, il tombe en OOM et
+finit au statut "Terminated"
+
+# Behavior CPU
+La request doit être settée pour garantir au minimum à chaque pod qu'il a de quoi démarrer
+
+No requests/No limits => not ideal (si le pod 1 consomme toute la cpu, il empêche le pod 2 de démarrer)
+No requests/Limits => not ideal (requests=limits, pas bon car on consomme au démarrage toute la cpu même si on n'en a pas besoin)
+Requests/Limits => not ideal (si le pod 1 a besoin de plus de cpu alors que le pod 2 n'en utilise pas beaucoup, le pod 1 est bloqué)
+Requests/No limits => ideal (si le pod 1 a besoin de plus de cpu alors que le pod 2 n'en utilise pas beaucoup, le pod 1 n'est pas bloqué)
+
+# Behavior Memory
+No requests/No limits => not ideal (si le pod 1 consomme toute la mémoire, il empêche le pod 2 de fonctionner)
+No requests/Limits => requests=limits
+Requests/Limits => les 2 pods auront la même limite et ne pourront pas aller au-delà
+Requests/No limits => un pod peut consommer autant de mémoire que ce qui est disponible. Si l'autre pod a besoin de plus de mémoire; la seule solution est de killer celui qui consomme beaucoup de mémoire
+
+# LimitRange
+Utilisé pour mettre des valeurs par défaut pour les requests et les limits
+dans les pods qui n'ont pas de valeurs mises pour les limits et requests
+C'est applicable au niveau du namespace. Ne s'applique qu'aux nouveaux pods
+
+-------
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: cpu-resource-constraint
+spec:
+  limits:
+  - default: # this section defines default limits
+      cpu: 500m
+    defaultRequest: # this section defines default requests
+      cpu: 500m
+    max: # max and min define the limit range
+      cpu: "1"
+    min:
+      cpu: 100m
+    type: Container
+
+-------
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: memory-resource-constraint
+spec:
+  limits:
+  - default: # this section defines default limits
+      memory: 1Gi
+    defaultRequest: # this section defines default requests
+      memory: 1Gi
+    max: # max and min define the limit range
+      memory: 1Gi
+    min:
+      memory: 500Mi
+    type: Container
+
+# ResourceQuota
+Utilisé pour restreindre le "montant" total des ressources qui peuvent être
+consommées par les applications déployées sur un cluster Kubernetes.
+Applicable au niveau du namespace
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: my-resource-quota
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: "4Gi"
+    limits.cpu: "10"
+    limits.memory: "10Gi"

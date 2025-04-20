@@ -1,0 +1,90 @@
+Readiness Probes
+
+Container status
+Après creation, un container est dans le statut "Pending" et est en attente
+d'être schedulé. Une fois schedulé, il passe au statut "ContainerCreating".
+C'est à ce moment que les images sont pull et une fois tous les containers du pod
+sont démarrés, celui-ci passe au statut "Running".
+Donne un sommaire high-level du pod
+
+Pod Conditions
+Permet d'avoir des informations complémentaires au statut du pod. Visibles lors
+de l'exécution de la commande kubectl describe pod (section Conditions)
+
+PodScheduled
+Initialized
+ContainersReady
+Ready
+
+Par défaut, Kubernetes assume que dès qu'un container est créé, celui-ci est
+prêt pour accepter du trafic et il met la condition Ready à true. C'est sur la
+condition Ready que les routes des services se basent pour commencer à envoyer
+du trafic à un pod.
+
+Readiness Probes
+- HTTP test pour vérifier qu'une API est disponible
+- TCP test pour vérifier qu'une socket TCP est en écoute
+- Exécuter une commande à l'intérieur du container pour exécuter un script
+Par défaut, si l'application n'est pas "Ready" après 3 tentatives, la probe
+s'arrêtera. Il y a la possibilité avec "initialDelaySeconds" de dire au bout de
+combien de temps le pod est ready
+
+# Pod definition with HTTP probe
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp
+  labels:
+    name: simple-webapp
+spec:
+  containers:
+  - name: simple-webapp
+    image: simple-webapp
+    ports:
+      containerPort: 8080
+    readinessProbe:
+      httpGet:
+        path: /api/ready
+        port: 8080
+      # after how many seconds to probe
+      initialDelaySeconds: 10
+      # how often to probe
+      periodSeconds: 5
+      # to override the default 3 attempts
+      failureThreshold: 8
+
+# Pod definition with TCP probe
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp
+  labels:
+    name: simple-webapp
+spec:
+  containers:
+  - name: simple-webapp
+    image: simple-webapp
+    ports:
+      containerPort: 8080
+    readinessProbe:
+      tcpSocket:
+        port: 3306
+
+# Pod definition with executing command
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp
+  labels:
+    name: simple-webapp
+spec:
+  containers:
+  - name: simple-webapp
+    image: simple-webapp
+    ports:
+      containerPort: 8080
+    readinessProbe:
+      exec:
+        command:
+          - cat
+          - /app/is_ready

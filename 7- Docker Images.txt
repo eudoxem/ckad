@@ -1,0 +1,43 @@
+Docker
+
+# Créer une Dockerfile
+Fichier créé sour la forme INSTRUCTION (à gauche)  ARGUMENT (à droite)
+
+FROM Ubuntu
+
+RUN apt-get update
+RUN apt-get install python
+
+RUN pip install flask
+RUN pip install flask-mysql
+
+COPY . /opt/source-code
+
+ENTRYPOINT FLASK_APP=/opt/source-code/app.py flask run
+
+# Expliquer quelques instructions
+FROM: toujours la 1ère ligne d'un Dockerfile
+RUN: demande à Docker d'exécuter une commande particulière
+COPY: copie des fichiers du système local vers l'image
+ENTRYPOINT: spécifie une commande qui sera exécutée au démarrage de l'image
+
+# Créer une image en local
+docker build -t image-tag .
+
+# Exécuter une image en local
+docker run -p hostPort:containerPort image-tag
+
+# Publier une image sur DockerHub
+docker push image-tag
+
+# Inspecter une image
+docker inspect image-tag
+
+# Lister toutes les images
+docker images
+
+# Lister les conteneurs en vie
+docker ps
+
+# Lister tous les conteneurs
+docker ps -a

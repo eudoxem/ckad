@@ -1,0 +1,35 @@
+Jobs
+
+Fait partie des workloads qui ont une durée de vie limitée (batch, reporting,
+analytics, email, treating image, etc) contrairement à tout ce qui a été vu
+jusqu'ici (web server, application, etc)
+
+Ils sont utilisés pour faire tourner un nombre de pods pour accomplir une tâche.
+L'attribut completions permet de spécifier le nombre total de pods à créer (par
+défaut 1) et parallelism permet de paralléliser le nombre de pods à lancer (1
+par défaut)
+
+# Job definition
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: math-add-job
+spec:
+  completions: 3
+  parallelism: 3
+  template:
+    spec:
+      containers:
+        - name: math-add
+          image: ubuntu
+          command: ['expr', '3', '+', '2']
+      restartPolicy: Never
+
+# Lister les jobs
+kubectl get jobs
+
+# Voir le résultat du job
+kubectl logs math-add-job-1d87pn
+
+# Supprimer un job
+kubectl delete job math-add-job-1d87pn

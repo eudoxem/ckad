@@ -1,0 +1,37 @@
+Node Affinity
+
+Lié à la mise en place d'une limitation sur les pods les obligeant à tourner
+uniquement sur des nodes bien identifiés (assignation de pods à des noeuds).
+Adapté pour des conditions plus complexes
+
+Sur la méthode de nodeSelector, ce qui joue c'est l'égalité entre le label
+mis sur le node et la valeur mise dans le nodeSelector. Une fois le label mis
+sur le node et le pod créé, celui-ci sera exécuté sur le bon noeud.
+
+Le nodeSelector a cependant des limitations car il ne permet de gérer qu'un
+seul label pour remplir une condition. Pas adapté pour des conditions plus
+complexes (Large OR Medium, NOT small, etc)
+
+# Label sur un node
+kubectl label nodes node1 size=Large
+
+# Pod definition avec nodeSelector
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+spec:
+  containers:
+    - name: data-processor
+      image: data-processor
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: size
+            operator: In
+            values:
+            - Large
+
+# Node Affinity types

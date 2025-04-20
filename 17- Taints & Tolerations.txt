@@ -1,0 +1,38 @@
+Taints & Tolerations
+
+Lié à la relation pod-node et comment restreindre quel pod ira sur quel node.
+Taint (analogie à la personne qui met un spray) relatif au node
+Toleration (analogie à l'insecte tolérant au spray) relatif au pod
+Taint & Toleration n'ont rien à voir avec la sécurité ou l'intrusion sur un cluster.
+Ces 2 concepts sont utilisés pour mettre des restrictions sur quels pods peuvent
+être schédulés sur quels nodes mais ils ne sont pas là pour dire à un pod d'aller
+sur un noeud particulier. Ils permettent juste de dire à un node d'accepter
+seulement les pods avec une certaine toleration.
+Pour restreindre un pod à un noeud particulier, il faut utiliser un autre concept
+appelé Node Affinity.
+Par défaut, les pods n'ont aucune Toleration.
+C'est le concept de Taints & Tolerations qui permet de ne pas déployer
+d'applications sur le master node. Une Taint est automatiquement mise en place
+sur le master node au setup du cluster ce qui empêche tous les pods de s'y déployer
+
+# Activation d'une Taint sur un node
+kubectl taint nodes node-name key=value:taint-effect
+avec taint-effect ayant pour valeurs NoSchedule|PreferNoSchedule|NoExecute
+
+kubectl taint nodes node-1 app=blue:NoSchedule
+
+# Activation d'une Toleration sur un pod
+/!\ Les valeurs de la section Tolerations doivent être mises entre ""
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx
+      tolerations:
+      - key: "app"
+        operator: "Equal"
+        value: "blue"
+        effect: "NoSchedule"
