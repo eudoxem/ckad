@@ -1,0 +1,10 @@
+Kustomize ApiVersion & Kind
+
+Comme tous les autres fichiers de ressources Kubernetes, on peut mettre les
+properties apiVersion et Kind dans le fichier kustomization.yaml
+
+Il sont optionnels car kustomize prendra les paramètres par défaut mais il est
+recommandé de les mettre au cas où il y aurait des breaking changes.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization

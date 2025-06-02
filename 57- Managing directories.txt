@@ -1,0 +1,60 @@
+Managing directories
+
+Imaginons que nous avons décidé de regrouper les fichiers de configuration dans
+des sous-répertoires en fonction de leur spécificité. Ceci a pour conséquence de
+lancer les commandes suivantes pour déployer les ressources (ce qui n'est pas génial):
+kubectl apply -f k8s/api
+kubectl apply -f k8s/db
+
+On peut utiliser le fichier kustomization.yaml en le mettant à la racine de k8s
+afin de spécifier les resources qu'on souhaite configurer
+
+k8s/
+  kustomization.yaml
+  api/
+    api-depl.yaml
+    api-service.yaml
+  db/
+    db-depl.yaml
+    db-service.yaml
+
+# Kustomization.yaml correspondant
+apiVersion: kustomize.config.k8s.io/
+kind: Kustomization
+
+resources:
+  - api/api-depl.yaml
+  - api/api-service.yaml
+  - db/db-depl.yaml
+  - db/db-service.yaml
+
+Kustomize permet d'adresser le problème de navigation entre les répertoires.
+Les 2 commandes natives exécutées plus haut et qui nécessitaient la navigation
+entre les différents répertoires sont remplacées par
+kustomize build k8s/ | kubectl apply -f -
+
+Si le nombre de sous-répertoires augmente, cette technique n'est pas optimale.
+Une autre façon de faire est de mettre un fichier de customization par folder
+
+k8s/
+  kustomization.yaml  -> resources:
+                          - api/
+                          - db/
+                          - cache/
+                          - kafka/
+  api/
+    kustomization.yaml  -> resources:
+                            - api-depl.yaml
+                            - api-service.yaml
+  db/
+    kustomization.yaml  -> resources:
+                            - db-depl.yaml
+                            - db-service.yaml
+  cache/
+    kustomization.yaml  -> resources:
+                            - cache-depl.yaml
+                            - cache-service.yaml
+  kafka/
+    kustomization.yaml  -> resources:
+                            - kafka-depl.yaml
+                            - kafka-service.yaml

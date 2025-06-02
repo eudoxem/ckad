@@ -1,0 +1,35 @@
+Persistent Volumes
+
+La configuration qui a été faite dans le chapitre précédent est faite au niveau
+du pod. Si on est dans un large environnement et s'il existe plusieurs pods,
+il faudra que chaque développeur reproduise cette configuration sur chaque
+définition de pod. A chaque changement de configuration, il faudra le faire sur
+toutes les définitions.
+
+Il faudrait plutôt une gestion du stockage plus centralisée. On aimerait plutôt
+qu'un administrateur puisse créer un large espace de stockage dans lequel les
+utilisateurs prendront des morceaux pour leurs applications.
+
+C'est à ça que servent les Persistent Volumes qui sont des "cluster-wide pool of
+storage volumes". Les utilisateurs peuvent utiliser du stockage de ce pool en
+utilisant des Persitent Volume Claims (PVC)
+
+# Persitent Volume definition file
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-vol1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath: -- à ne pas utiliser en production
+    path: "/tmp/data"
+  awsElasticBlockStore: -- à privilégier
+    volumeID: <volume-id>
+    fsType: ext4
+
+
+# Lister les Persitent Volumes
+kubectl get persitentvolume

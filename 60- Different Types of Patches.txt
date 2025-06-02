@@ -1,0 +1,54 @@
+Different Types of Patches
+
+Inline
+# kustomization.yaml (JSON 6902 patch)
+# Remplacer replicas: 1 dans spec par 5 du Deployment
+patches:
+  - target:
+      kind: Deployment
+      name: api-deployment
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 5
+
+Separate file
+# kustomization.yaml (JSON 6902 patch)
+# Remplacer replicas: 1 dans spec par 5 du Deployment
+patches:
+  - path: replica-patch.yaml
+    target:
+      kind: Deployment
+      name: api-deployment
+
+# replica-patch.yaml
+- op: replace
+  path: /spec/replicas
+  value: 5
+
+
+Inline
+# kustomization.yaml (Strategic merge patch)
+# Remplacer replicas: 1 dans spec par 5 du Deployment
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-deployment
+      spec:
+        replicas: 5
+
+Separate file
+# kustomization.yaml (Strategic merge patch)
+# Remplacer replicas: 1 dans spec par 5 du Deployment
+patches:
+  - path: replica-patch.yaml
+
+# replica-patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 5

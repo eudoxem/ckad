@@ -1,0 +1,90 @@
+Patches List
+
+# kustomization.yaml (JSON 6902 patch)
+# Remplacer le 1er container dans spec/template/spec/container par haproxy de Deployment
+patches:
+  - target:
+      kind: Deployment
+      name: api-deployment
+    patch: |-
+      - op: replace
+        path: spec/template/spec/containers/0
+        value:
+          name: haproxy
+          image: haproxy
+
+# kustomization.yaml (Strategic merge patch)
+# Remplacer l'image du 1er container dans spec/template/spec/container par haproxy de Deployment
+patches:
+  - label-patch.yaml
+
+# label-patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  template:
+    spec:
+      containers:
+        - name: nginx
+          image: haproxy
+
+
+# kustomization.yaml (JSON 6902 patch)
+# Ajouter à la fin de la liste des containers dans spec/template/spec/container par haproxy de Deployment
+patches:
+  - target:
+      kind: Deployment
+      name: api-deployment
+    patch: |-
+      - op: add
+        path: spec/template/spec/containers/-
+        value:
+          name: haproxy
+          image: haproxy
+
+# kustomization.yaml (Strategic merge patch)
+# Ajouter à la fin de la liste des containers dans spec/template/spec/container par haproxy de Deployment
+patches:
+  - label-patch.yaml
+
+# label-patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  template:
+    spec:
+      containers:
+        - name: haproxy
+          image: haproxy
+
+
+# kustomization.yaml (JSON 6902 patch)
+# Supprimer le 2ème container de la liste des containers dans spec/template/spec/containers de Deployment
+patches:
+  - target:
+      kind: Deployment
+      name: api-deployment
+    patch: |-
+      - op: remove
+        path: spec/template/spec/containers/1
+
+# kustomization.yaml (Strategic merge patch)
+# Supprimer le container database de la liste des containers dans spec/template/spec/containers de Deployment
+patches:
+  - label-patch.yaml
+
+# label-patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  template:
+    spec:
+      containers:
+        - $patch: delete
+          name: database

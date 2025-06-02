@@ -1,0 +1,52 @@
+Patches
+
+Kustomize fournit une autre façon de modifier les configurations Kubernetes.
+Contrairement aux commons transformers, les patches fournissent une approche
+plus chirurgicale pour adresser une ou plusieurs sections spécifiques.
+
+Pour créer un patch, 3 paramètres doivent être fournis:
+  - type de l'opération: add/remove/replace
+  - target: Kind, Version/Group, Name, Namespace, labelSelector, annotationSelector
+  - value: valeur qui doit être remplacée ou ajoutée
+
+# kustomization.yaml (JSON 6902 patch)
+# Remplacer name: api-deployment dans metadata par web-deployment des Deployment
+patches:
+  - target:
+      kind: Deployment
+      name: api-deployment
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: web-deployment
+
+# kustomization.yaml (strategic merge patch)
+# Remplacer name: api-deployment dans metadata par web-deployment des Deployment
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: web-deployment
+
+# kustomization.yaml (JSON 6902 patch)
+# Remplacer replicas: 1 dans spec par 5 du Deployment
+patches:
+  - target:
+      kind: Deployment
+      name: api-deployment
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 5
+
+# kustomization.yaml (strategic merge patch)
+# Remplacer replicas: 1 dans spec par 5 du Deployment
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-deployment
+      spec:
+        replicas: 5

@@ -1,0 +1,36 @@
+Persistent Volume Claims
+
+Les administrateurs créent les PV alors que les PVC sont créés par les
+utilisateurs pour utiliser le stockage. Une fois les PVC crées, Kubernetes lie
+les PV au PVC en se basant sur la requête et les properties du volume. Chaque
+PVC est lié à un seul PV. Au cours du processus de binding, Kubernetes essaie
+de trouver un PV qui a les capacités suffisantes que celles demandées par le PVC
+de même que d'autres properties telles que les access modes, les volume modes,
+le storage class, etc. En cas de matchs possibles multiples pour un seul PVC et
+qu'on souhaite utiliser/spécifier un volume particulier, on peut utiiser les
+labels et selectors pour le binding. Une plus petite claim peut être bindé à un
+volume plus grand si tous les critères matchent et qu'il n'y a pas de plus petit
+volume. Du fait qu'il y ait une relation 1-1 entre le PVC et le PV, dans ce cas,
+l'espace restant ne pourra être utilisé par aucune autre claim. S'il n'y a pas
+de volume disponible, le PVC restera dans un état Pending jusqu'à ce que de
+nouveaux volumes soient disponibles. Le PVC sera automatiquement bindé en cas de
+disponibilité d'un nouveau PV
+
+# Persitent Volume Claim definition file
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+
+
+# Lister les Persitent Volume Claim
+kubectl get persitentvolumeclaim
+
+# Supprimer un Persitent Volume Claim
+kubectl delete persitentvolumeclaim myclaim

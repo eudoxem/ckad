@@ -1,0 +1,35 @@
+Storage Classes
+
+Dans les chapitres précédents, on a vu comment créer des PV, puis des PVC
+réclamer ce stockage et enfin utiliser les PVC dans le pod definition file en
+tant que volume.
+
+En utilisant un provider tel que Google Cloud, avant de créer le PV, il faut
+créer le disque sur Google. Chaque fois qu'une application aura besoin de stockage,
+il faudra aller manuellement faire le provisionning dans Google pour obtenir un
+nom de disque qui sera utilisé plus tard dans le PV. C'est ce qu'on appelle le
+provisionning statique de volumes. L'idéal serait que tout ceci soit automatique.
+C'est à ça que servent les storage classes.
+
+Avec les storage classes, on peut définir un provisioner tel que Google Storage
+qui peut automatiquement provisioner le storage dans Google Cloud et l'attacher
+aux pods quand la claim sera faite. C'est le provisionning dynamique des volumes.
+Il faut donc créer un objet de type StorageClass
+
+Avec l'usage du StorageClass, on n'a plus besoin de PV. On spécifie maintenant
+le storageClassName dans la définition du PVC. Le PV sera créé automatiquement
+par le StorageClass donc plus besoin de le créer manuellement
+
+# Storage Class definition file
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: google-storage
+provisioner: kubernetes.io/gce-pd
+
+# Lister les StorageClass
+kubectl get storageclass
+kubectl get sc
+
+# Supprimer un Persitent Volume Claim
+kubectl delete persitentvolumeclaim myclaim

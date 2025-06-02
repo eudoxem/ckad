@@ -1,0 +1,30 @@
+Helm Introduction
+
+Les applications que nous déployons dans nos serveurs Kubernetes peuvent devenir
+très complexes. Par exemple, une simple application WordPress nécessitera plusieurs
+objets (deployment pour la déclaration des pods, un PV pour stocker la base de données,
+un PVC, un service pour exposer l'application, un secret pour stocker le password
+de l'admin et peut-être encore d'autres choses).
+
+Pour chaque objet, on aura un fichier yaml séparé et on devra faire un kubectl apply
+pour chaque fichier ce qui peut vite devenir un cauchemar.
+
+C'est là que Helm devient intéressant et utile car il est le package manager
+de Kubernetes. On peut faire une analogie avec un installer d'applications du
+style nsis. En une seule commande, on arrive à déployer notre application même si
+elle contient des centaines de fichiers
+
+Le fichier values.yaml est le fichier dans lequel on peut déclarer ses custom
+settings
+
+# Installe l'application wordpress
+helm install wordpress
+
+# Met à jour l'application wordpress
+helm upgrade wordpress
+
+# Rollback l'application wordpress et revient à la version précédente
+helm rollback wordpress
+
+# Désinstalle l'application wordpress
+helm uninstall wordpress

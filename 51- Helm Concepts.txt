@@ -1,0 +1,51 @@
+Helm Concepts
+
+Helm utilise des templates dans lesquels on peut variabiliser les valeurs qui
+changent en fonction des environnements (secret, pv size, image à utiliser, etc).
+Les variables sont identifiées par les {{ }} et leurs valeurs sont récupérées
+dans le fichier values.yaml
+
+C'est la combinaison des fichiers template et values qui permet d'avoir la
+version finale des fichiers de définition qui seront utilisés pour déployer
+l'application dans Kubernetes. Templates + values = Helm chart
+
+Chart.yaml est un fichier qui permet de donner des informations sur la Chart
+telles que sa version, une description, des keywords associés à l'application,
+les maintainers, etc
+
+On peut créer ses propres charts ou en télécharger sur artifacthub.io qu'on
+appelle aussi repository.
+
+On peut rechercher des charts
+  - en allant sur l'interface web https://artifacthub.io
+  - en lançant la ligne de commande helm search hub wordpress
+
+
+# Chercher une chart dans le repository hub qui est géré par la communauté
+helm search hub wordpress
+
+# Ajouter un repository au setup local de Helm
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+# Chercher une chart dans un autre repo que hub (search repo au lieu de search hub)
+helm search repo wordpress
+
+# Liste les repositories existants
+helm repo list
+
+# Installer une chart localement. Chaque installation de chart est appelée une release
+helm install [release-name] [chart-name]
+helm install release-1 bitnami/wordpress
+
+# Lister la liste des packages installés (releases)
+helm list
+
+# Désinstaller un package
+helm uninstall my-release
+
+# Télécharger sans installer (untar parce que le download est un tar)
+# On peut ensuite faire des commandes basiques pour lister, modifier les configs
+# Et finalement installer la chart modifiée
+helm pull --untar bitnami/wordpress
+ls wordpress
+helm install release-4 ./wordpress

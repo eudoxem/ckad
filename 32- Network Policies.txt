@@ -1,0 +1,69 @@
+Network Policies
+
+Il existe 2 types de trafics:
+- Ingress: pour un serveur web, le trafic entrant depuis les utilisateurs est un ingress traffic
+- Egress: pour le serveur web, le trafic sortant vers l'app server est un egress traffic
+
+Quand on parle d'ingress et d'egress, du point de vue d'un composant, on regarde
+uniquement l'origine du trafic:
+- d'un autre composant vers ce composant -> ingress
+- du composant vers un autre composant -> egress
+
+Par défaut, Kubernetes est configuré avec une "All-Allow rule". Celle-ci permet
+d'accepter du trafic depuis n'importe quel pod vers n'importe quel autre
+pod/service à l'intérieur du cluster.
+
+Dans une application contenant un web server, un API server et un database server,
+par défaut Kubernetes permettra la communication entre ces 3 composants du cluster
+via des services. Si on souhaite par exemple que le web pod ne communique pas
+directement avec le database pod, il faut mettre en place une Network Policy pour
+autoriser uniquement le trafic vers la DB depuis l'API Server. La Network Policy
+est un autre objet K8s et est lié à un ou plusieurs pods via des labels et selectors.
+Des règles peuvent être définies dans la policy du style
+"Allow ingress traffic from API Pod on port 3306"
+
+La création d'une Ingress rule ne nécessite pas de créer une Egress rule pour
+retourner le résultat de cet appel. En revanche, si un autre appel (qui n'a rien
+à voir avec le résultat de l'Ingress) doit être fait, il faut créer une Egress rule
+
+Dans la partie from, on peut utiliser des podSelector pour sélectionner les pods
+par leur label, namespaceSelector pour sélectionner les namespaces par leur label
+et ipBlock pour sélectionner des ranges d'adresses IP
+
+# Network policy definition file
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: api-pod
+    ports:
+    - protocol: TCP
+      port: 3306
+  egress:
+  - to:
+    - ipBlock:
+      cidr: 192.168.5.10/32
+    ports:
+    - protocol: TCP
+      port: 80
+
+# Création d'une policy
+kubectl create -f policy-definition.yaml
+
+# Liste des NetworkPolicy
+kubectl get networkpolicy
+kubectl get netpol
+
+# Détail d'une NetworkPolicy
+kubectl describe networkpolicy payroll-policy

@@ -1,0 +1,20 @@
+Kustomize Problem Statement and Idealogy.txt
+
+Afin d'avoir des configurations différentes entre environnements (dev/test/prod)
+une option est de créer des folders différents contenant les yaml en prenant soin
+de mettre les bonnes valeurs pour les bons environnements. Cette solution n'est
+évidemment pas optimale.
+
+Le but de Kustomize est d'éviter de dupliquer les configurations en réutilisant
+au maximum ce qui ne change pas d'un environnement à l'autre et en ne modifiant
+que ce qui est nécessaire.
+
+2 concepts importants dans Kustomize:
+  - base pour la configuration de base (identique pour tous les environnements)
+  - overlays pour les surcharges (permet d'overrider pour un environnement) ->
+    overlays/dev, overlays/test, overlays/prod
+
+base + overlays => final manifests
+
+Kustomize est intégré dans kubectl et on n'a besoin d'installer aucun package
+supplémentaire

@@ -1,0 +1,26 @@
+Kustomization.yaml File
+
+Ce fichier est le fichier que regarde Kustomize. Il est généralement au même
+endroit que les autres fichiers de configuration Kubernetes. C'est un fichier à
+créer soi-même et il doit avoir le nom kustomization.yaml
+
+Il doit contenir 2 sections:
+ - resources: liste des ressources au sens Kubernetes (fichiers yaml) gérées par
+              Kustomize
+ - customisations à effectuer
+
+# Kustomization.yaml
+# Kubernetes resources to be managed by kustomize
+resources:
+  - nginx-deployment.yaml
+  - nginx-service.yaml
+
+# Customizations that need to be made
+commonLabels:
+  company: KodeKloud
+
+# Générer les resources finales
+# En supposant que les 3 fichiers de config sont dans le répertoire k8s
+# Permettra d'avoir le service et le deployment avec les informations injectées
+# Mais n'appliquera rien sur le cluster Kubernetes
+kustomize build k8s

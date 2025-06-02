@@ -1,0 +1,83 @@
+Patches dictionary
+
+# kustomization.yaml (JSON 6902 patch)
+# Remplacer component: api dans spec/template/metadata/labels par web de Deployment
+patches:
+  - target:
+      kind: Deployment
+      name: api-deployment
+    patch: |-
+      - op: replace
+        path: spec/template/metadata/labels/component
+        value: web
+
+# kustomization.yaml (Strategic merge patch)
+# Remplacer component: api dans spec/template/metadata/labels par web de Deployment
+patches:
+  - label-patch.yaml
+
+# label-patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  template:
+    metadata:
+      labels:
+        component: web
+
+
+# kustomization.yaml (JSON 6902 patch)
+# Ajouter le label org: kodekloud dans spec/template/metadata/labels de Deployment
+patches:
+  - target:
+      kind: Deployment
+      name: api-deployment
+    patch: |-
+      - op: add
+        path: spec/template/metadata/labels/org
+        value: kodekloud
+
+# kustomization.yaml (Strategic merge patch)
+# Ajouter le label org: kodekloud dans spec/template/metadata/labels de Deployment
+patches:
+  - label-patch.yaml
+
+# label-patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  template:
+    metadata:
+      labels:
+        org: kodekloud
+
+
+# kustomization.yaml (JSON 6902 patch)
+# Supprimer le label org: kodekloud dans spec/template/metadata/labels de Deployment
+patches:
+  - target:
+      kind: Deployment
+      name: api-deployment
+    patch: |-
+      - op: remove
+        path: spec/template/metadata/labels/org
+
+# kustomization.yaml (Strategic merge patch)
+# Supprimer le label org: kodekloud dans spec/template/metadata/labels de Deployment
+patches:
+  - label-patch.yaml
+
+# label-patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  template:
+    metadata:
+      labels:
+        org: null

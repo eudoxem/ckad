@@ -1,0 +1,19 @@
+Kustomize vs Helm
+
+Helm utilise du templating Go avec des variables dont les valeurs sont mises
+dans le fichier values.yaml. C'est plus qu'un simple outil de customisation par
+environnement, c'est aussi un package manager pour les applications Kubernetes.
+
+Helm fournit également des features telles que des conditions, des boucles, des
+fonctions, des hooks que Kustomize ne propose pas.
+
+Les templates Helm ne sont pas des fichiers yaml valides puisqu'ils utilisent
+du templating Go et ils sont également difficiles à lire pour les plus complexes.
+A contrario, Kustomize est très facile à lire car il s'agit de fichiers yaml
+classiques
+
+En fonction des besoins, il faudra choisir entre la simplicité et la facilité de
+Kustomize d'une part et la complexité et les features de Helm
+
+# Afficher la version de kustomize installée (une fois l'installation effectuée)
+kustomize version --short

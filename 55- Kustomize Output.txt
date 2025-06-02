@@ -1,0 +1,18 @@
+Kustomize Output
+
+La commande kustomize build k8s/ ne permet pas de déployer la configuration mais
+plutôt de la construire en injectant les variables dans les templates
+
+# Appliquer la configuration créée avec kustomize sur le cluster
+kustomize build k8s/ | kubectl apply -f -
+
+# Appliquer nativement la configuration créée avec kustomize sur le
+# cluster en utilisant uniquement kubectl (option k pour préciser le répertoire)
+kubectl apply -k k8s/
+
+# Effacer avec kustomize
+kustomize build k8s/ | kubectl delete -f -
+
+# Effacer nativement la configuration créée avec kustomize sur le
+# cluster en utilisant uniquement kubectl (option k pour préciser le répertoire)
+kubectl delete -k k8s/

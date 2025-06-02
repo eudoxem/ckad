@@ -1,0 +1,28 @@
+Security Primitives
+
+- Secure hosts
+  - Password based authentication disabled
+  - SSH key based authentication
+
+- Secure Kubernetes
+  - Kube-apiserver: le centre de toutes les opérations dans Kubernetes (via kubectl ou appel API)
+  - Contrôler l'accès à l'API: 1ère ligne de défense
+  - 2 types de décisions à prendre:
+    - qui peut accéder au cluster => authentication
+      - Files - Username & Passwords
+      - Files - Username & Tokens
+      - Certificates
+      - External authentication providers - LDAP
+      - Service accounts (for machines)
+    - quelle(s) action(s) peuvent être accomplies => authorization
+      - RBAC (Role Based Access Control) Authorization
+      - ABAC (Atrribute Based Access Control) Authorization
+      - Node Authorization
+      - Webhook Mode
+
+Les communications entre le cluster et les différents composants (etcd cluster,
+Kube Controller Manager, Kube Scheduler, Kube Proxy, Kubelet) sont sécurisées en
+utilisant du TLS encryption
+
+Par défaut, tous les pods peuvent accéder à tous les autres pods dans le cluster.
+Des restrictions peuvent être mises en utilisant des Network Policies.

@@ -1,0 +1,19 @@
+Transformers
+
+Avec Kustomize, on peut effectuer un certain nombre de transformations telles
+qu'appliquer des changements communs à toutes les configurations ou en créer
+nous-mêmes. Il existe plusieurs types de transformers mais on se concentrera sur
+ceux qu'on appelle les "common transformers" qui permettent d'éviter de modifier
+à la main tous les fichiers
+
+Common transformers:
+- commonLabel: ajoute un label commun à toutes les ressources
+- namePrefix/Suffix: ajoute un prefixe/suffixe à tous les noms des ressources
+- namespace: ajoute un namespace commun à toutes les ressources
+- commonAnnotation: ajoute une annotation à toutes les ressources
+
+Image transformers (pour changer le nom d'une image et éventuellement son tag)
+images:
+  - name: nginx
+    newName: haproxy
+    newTag: 2.4

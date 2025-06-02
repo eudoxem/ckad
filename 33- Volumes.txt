@@ -1,0 +1,35 @@
+Volumes
+
+Avec Docker, les containers sont par nature transient et ont une durée de vie limitée.
+Ceci est également valable pour les données à l'intérieur du container. Pour
+persister les données traitées par le container, on attache un ou plusieurs
+volumes au container à sa création. Les données traitées sont maintenant mises
+dans le volume ce qui permet de les avoir de façon permanente. Même si le
+container est supprimé, les données restent.
+
+Toute cette théorie est valable également dans Kubernetes et s'applique aux pods.
+
+# Sample of volume
+apiVersion: v1
+kind: Pod
+metadata:
+  name: random-number-generator
+spec:
+  containers:
+  - image: alpine
+    name: alpine
+    command: ["bin/sh", "c"]
+    args: ["shuf -i 0-100 -n 1 >> /opt/number.out"]
+    volumeMounts:
+    - mountPath: /opt
+      name: data-volume
+  volumes:
+  - name: data-volume
+    hostPath:
+      path: /data
+      type: Directory
+
+Cette définition fonctionne bien pour un seul node mai dans le cadre d'un cluster
+de plusieurs noeuds, cette solution n'est pas recommandée. Kubernetes supporte
+différentes solutions de stockage telles que NFS, Cluster FS mais aussi des
+solutions cloud telles que AWS, ESB, Azure Disc/File, Google Persistent Disc

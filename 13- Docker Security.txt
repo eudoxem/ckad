@@ -13,7 +13,7 @@ ceux du container.
 Par défaut, Docker fait tourner les container en tant que root. Mais, on peut
 forcer le user via la commande
 docker run --user=1000 ubuntu sleep 3600
-ou en utiliant USER 1000 dans le Dockerfile
+ou en utilisant USER 1000 dans le Dockerfile
 
 Le root user dans le container n'est pas tout à fait le root user du host.
 Il possède un subset des capacités du root Linux
