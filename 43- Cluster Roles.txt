@@ -1,0 +1,50 @@
+Cluster Roles
+
+En Kubernetes, les ClusterRoles sont des objets de type RBAC (Role-Based Access Control)
+utilisés pour définir un ensemble de permissions à l’échelle du cluster,
+ou pour des ressources non-namespaced (comme les nodes, persistentvolumes, etc.)
+
+-- Définition du ClusterRole
+-- Ce ClusterRole donne le droit de lire les pods (get, list, watch) dans tous les namespaces
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" = core API group
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+
+
+-- Définition du ClusterRoleBinding
+-- Cela donne à l’utilisateur alice la capacité de lire tous les pods dans tous les namespaces
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: read-pods-global
+subjects:
+- kind: User
+  name: alice
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+
+-- Lister les clusterroles
+kubectl get clusterroles
+
+-- Compter le nombre de clusterroles
+kubectl get clusterroles --no-headers | wc -l
+
+-- Lister les clusterrolebindings
+kubectl get clusterrolebindings
+
+-- Détails sur un clusterrole
+kubectl describe clusterrole developer
+
+-- Détails sur un clusterrolebinding
+kubectl describe clusterrolebinding devuser-developer-binding
+
+-- Get the API groups and resource names
+kubectl api-resources

@@ -1,0 +1,58 @@
+Admission Controllers
+
+En Kubernetes, les Admission Controllers (ou contrôleurs d’admission) sont des
+composants critiques de la sécurité et de la validation dans le cycle de vie
+d’une requête API.
+Ils interviennent après l’authentification et l’autorisation, mais avant que
+l’objet ne soit stocké dans etcd.
+
+Un Admission Controller peut :
+- Modifier les objets de requête (ex. : ajout automatique de labels, sidecars, ressources).
+- Valider ou rejeter les requêtes selon des règles (ex. : refuser les containers qui s'exécutent en tant que root).
+- Appliquer des politiques de sécurité ou de fonctionnement (ex. : quotas, PSP, OPA/Gatekeeper…).
+
+Utilisateur -> API Server
+      ↳ Authentification
+      ↳ Autorisation (RBAC, ABAC…)
+      ↳ Admission Controllers (validation ou mutation)
+      ↳ Persisté dans etcd (si accepté)
+
+Il en existe deux types principaux :
+1- Mutating Admission Controllers
+→ Peuvent modifier les objets (ex. : MutatingAdmissionWebhook, DefaultStorageClass).
+2- Validating Admission Controllers
+→ Peuvent rejeter les objets (ex. : ValidatingAdmissionWebhook, PodSecurityPolicy, ResourceQuota).
+👉 Un objet passe d’abord par les mutateurs, puis par les validateurs.
+
+Webhooks d’admission (dynamiques)
+Il est possible d'écrire des webhooks personnalisés :
+
+MutatingAdmissionWebhook : pour modifier dynamiquement les objets.
+ValidatingAdmissionWebhook : pour appliquer des règles métier/custom.
+Ces webhooks sont externes à l'API server mais appelés à chaque création/modification d'objet.
+
+| Admission Controller         | Rôle principal                                     |
+| ---------------------------- | -------------------------------------------------- |
+| `NamespaceLifecycle`         | Empêche d’agir sur les namespaces en suppression   |
+| `LimitRanger`                | Applique des limites de ressources (CPU, mémoire…) |
+| `ServiceAccount`             | Attache automatiquement un service account         |
+| `DefaultStorageClass`        | Ajoute une classe de stockage par défaut           |
+| `ResourceQuota`              | Applique les quotas par namespace                  |
+| `PodSecurity`                | Applique les politiques de sécurité des pods (PSA) |
+| `MutatingAdmissionWebhook`   | Appelle les webhooks de mutation                   |
+| `ValidatingAdmissionWebhook` | Appelle les webhooks de validation                 |
+
+Les Admission Controllers sont activés dans le fichier de configuration de l’API Server (--enable-admission-plugins).
+--enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PodSecurity,...
+
+Cas d’usage courant
+Bloquer la création de pods qui montent des volumes hostPath.
+Forcer l’usage d’une image registry interne.
+Injecter un sidecar (ex. Istio, Linkerd).
+Appliquer les Pod Security Admission (PSA) : restricted, baseline, privileged.
+
+-- Lister les admission controllers activés (en dehors de ceux qui le sont automatiquement)
+grep enable-admission-plugins /etc/kubernetes/manifests/kube-apiserver.yaml
+
+-- Lister les admission-plugins (enable et disable)
+ps -ef | grep kube-apiserver | grep admission-plugins

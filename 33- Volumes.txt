@@ -29,7 +29,7 @@ spec:
       path: /data
       type: Directory
 
-Cette définition fonctionne bien pour un seul node mai dans le cadre d'un cluster
+Cette définition fonctionne bien pour un seul node mais dans le cadre d'un cluster
 de plusieurs noeuds, cette solution n'est pas recommandée. Kubernetes supporte
 différentes solutions de stockage telles que NFS, Cluster FS mais aussi des
 solutions cloud telles que AWS, ESB, Azure Disc/File, Google Persistent Disc

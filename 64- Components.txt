@@ -1,0 +1,38 @@
+Components
+
+Fournit la capacité de définir des morceaux de configuration réutilisables
+(resources et patches) pouvant être utilisés dans plusieurs overlays.
+
+Les components sont utiles dans des situations où l'application supporte de
+multiples features qui doivent être activés uniquement dans un subset des overlays
+
+k8s/
+    base/
+        kustomization.yaml
+        api-depl.yaml
+    components/
+        caching/
+            kustomization.yaml
+            deployment-patch.yaml
+            redis-depl.yaml
+        db/
+            kustomization.yaml
+            deployment-patch.yaml
+            postgres-depl.yaml
+    overlays/
+        dev/
+            kustomization.yaml
+        premium/
+            kustomization.yaml
+        standalone/
+            kustomization.yaml
+
+Dans les components, le kustomization.yaml sera de kind Component et inclura
+comme d'habitude les resources et les patches. Il faudra maintenant importer 
+notre component créé dans le(s) overlay(s). Dans le kustomization.yaml de l'
+overlay, il faut rajouter au même niveau que bases
+
+bases:
+  - ../../base
+components:
+  - ../../components/db

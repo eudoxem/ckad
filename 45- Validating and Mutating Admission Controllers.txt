@@ -1,0 +1,40 @@
+Validating and Mutating Admission Controllers
+
+Les admission controllers dans Kubernetes sont des composants qui interceptent
+les requêtes envoyées à l'API server après l'authentification et l'autorisation,
+mais avant que l'objet ne soit stocké dans etcd.
+
+Il en existe deux types principaux :
+
+🛠️ 1. Mutating Admission Controllers
+Objectif : Modifier les objets avant qu’ils ne soient enregistrés dans Kubernetes.
+Exemple d’usage :
+Ajouter des labels ou annotations automatiquement.
+Injecter un sidecar (comme le fait Istio ou Linkerd).
+Compléter les champs par défaut.
+Fonctionnement : Ils reçoivent la requête et peuvent modifier le contenu (patch JSON).
+Exemple concret : Ajouter automatiquement resources.limits si l'utilisateur ne les a pas définis.
+
+🔍 2. Validating Admission Controllers
+Objectif : Vérifier que la requête est conforme à certaines règles avant qu'elle ne soit acceptée.
+Ils ne modifient rien.
+Exemple d’usage :
+Rejeter un pod s’il utilise l’image latest.
+Interdire les volumes hostPath.
+S’assurer que les noms respectent un certain pattern.
+Fonctionnement : La requête est examinée, et si elle ne respecte pas les règles, elle est rejetée avec une erreur.
+
+📋 Ordre d’exécution :
+Mutating admission controllers sont appelés en premier.
+L’objet modifié est ensuite validé par les Validating admission controllers.
+Si tout est bon, il est persisté dans etcd.
+✨ Exemples d'admission controllers intégrés :
+MutatingAdmissionWebhook : permet aux webhooks externes de modifier des requêtes.
+ValidatingAdmissionWebhook : permet à des webhooks externes de les valider.
+NamespaceLifecycle, LimitRanger, PodSecurity, etc.
+🔧 Webhooks Admission Controllers
+Kubernetes permet aussi d’enregistrer des admission webhooks dynamiques, qui sont :
+
+MutatingAdmissionWebhook
+ValidatingAdmissionWebhook
+Ces webhooks permettent d’appeler des services externes (souvent écrits en Go, Python, etc.) pour effectuer des mutations ou des validations spécifiques à votre organisation.

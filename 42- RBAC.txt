@@ -1,0 +1,52 @@
+RBAC
+
+-- Définition du Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: developer
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "create", "update", "delete"]
+- apiGroups: [""]
+  resources: ["ConfigMap"]
+  verbs: ["create"]
+
+-- Définition du RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: devuser-developer-binding
+  namespace: dev
+subjects:
+- kind: User
+  name: dev-user
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: developer
+  apiGroup: rbac.authorization.k8s.io
+
+-- Lister les roles
+kubectl get roles
+
+-- Lister les rolebindings
+kubectl get rolebindings
+
+-- Détails sur un role
+kubectl describe role developer
+
+-- Détails sur un rolebinding
+kubectl describe rolebinding devuser-developer-binding
+
+-- Savoir si tant que user connecté, on peut faire telle ou telle action
+kubectl auth can-i create deployments
+kubectl auth can-i delete nodes
+
+-- Savoir en tant qu'administrateur (avec impersonation), quelle(s) action(s) un autre user peut faire
+kubectl auth can-i create deployments --as dev-user
+kubectl auth can-i delete nodes --as dev-user
+
+-- Même chose, mais en précisant le namespace
+kubectl auth can-i create deployments --as dev-user --namespace test

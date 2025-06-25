@@ -1,1 +1,10 @@
 Authorization
+
+L'autorisation est le mécanisme qui permet de répondre à la question
+"After a person is granted access to the resource, what can he do on that resource"
+
+Il y a différentes façons d'adresser cette problématique:
+- RBAC Authorization
+- ABAC Authorization
+- Node Authorization
+- Webhook Mode

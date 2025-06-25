@@ -1,0 +1,40 @@
+Overlays
+
+k8s/
+    base/
+        kustomization.yaml
+        nginx-depl.yaml
+        service.yaml
+        redis-depl.yaml
+    overlays/
+        dev/
+            kustomization.yaml
+            config-map.yaml
+        stg/
+            kustomization.yaml
+            config-map.yaml
+        prod/
+            kustomization.yaml
+            config-map.yaml
+
+Dans base, on crée les définitions Kubernetes pour chacun des objets qu'on
+souhaite avoir et dans le kustomization.yaml, on précise les ressources qu'on
+souhaite utiliser avec
+resources:
+  - nginx-depl.yaml
+  - service.yaml
+  - redis-depl.yaml
+
+Ensuite, dans le le kustomization.yaml de chaque overlay, on met les patches
+qu'on souhaite appliquer en prenant bien soin de préciser le folder du fichier
+kustomization.yaml qui servira de base (contient les valeurs par défaut)
+bases:
+  - ../../base
+
+patch: |-
+  - op: replace
+    path: /spec/replicas
+    value: 2
+
+Pour appliquer une config dans un overlay spécifique, il faut lancer
+kubectl apply -k overlays/dev/

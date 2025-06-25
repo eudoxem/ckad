@@ -1,0 +1,49 @@
+API versions
+
+En Kubernetes, les API versions permettent de gérer l’évolution des objets et
+fonctionnalités. Chaque ressource (Pods, Deployments, Services, etc.)
+est définie via une API group/version, indiquée dans son manifeste YAML :
+
+apiVersion: apps/v1
+kind: Deployment
+
+📚 Structure d'une API version
+Elle suit généralement ce schéma :
+<group>/<version>
+Par exemple :
+apps/v1 (pour Deployment, DaemonSet, etc.)
+batch/v1 (pour Job, CronJob)
+v1 (core group, pour Pod, Service, Namespace…)
+Si aucun group n’est spécifié, c’est l’API core (v1).
+
+🔄 Phases de version : Alpha / Beta / GA
+Chaque version peut être dans une phase de stabilité :
+
+Phase	  Préfixe	  Stabilité	          Pour prod ?	   Suppression possible ?
+Alpha	  v1alpha1	Instable	          ❌ Non	        ✅ Oui (à tout moment)
+Beta	  v1beta1	  Moyennement stable	⚠️ Parfois	    ✅ Oui (mais préavis)
+GA	    v1	      Stable	            ✅ Oui	        ❌ Non (sauf dépréciation lente)
+
+📦 Exemples courants d’API versions
+Ressource	                       apiVersion	                Remarques
+Pod	                             v1	                        API core
+Deployment	                     apps/v1	                  Depuis Kubernetes 1.9
+DaemonSet	                       apps/v1
+CronJob	                         batch/v1	                  GA depuis 1.21
+Ingress	                         networking.k8s.io/v1	      GA depuis 1.19
+Service	                         v1	                        API core
+HorizontalPodAutoscaler	         autoscaling/v2	            Pour les metrics avancées
+CustomResourceDefinition (CRD)	 apiextensions.k8s.io/v1	  GA depuis 1.16
+
+🔍 Comment voir les API disponibles ?
+1. Lister tous les API groups et versions :
+kubectl api-versions
+2. Lister toutes les ressources disponibles (et leurs API versions) :
+kubectl api-resources
+3. Vérifier l’API version d’un objet :
+kubectl get deployment my-app -o yaml
+⚠️ Attention à la dépréciation
+
+Certaines versions sont supprimées à mesure que Kubernetes évolue. Par exemple :
+extensions/v1beta1 a été supprimé depuis Kubernetes 1.22
+networking.k8s.io/v1beta1 aussi pour Ingress

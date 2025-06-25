@@ -1,1 +1,29 @@
 Authentication
+
+L'authentification est le mécanisme qui permet de répondre à la question
+"Who can access the resource".
+
+Il y a différentes façons d'adresser cette problématique:
+- Files: Username and Password
+- Files: Username and Tokens
+- Certificates
+- External authentication providers - LDAP
+- Service accounts
+
+L'authentification des utilisateurs se connectant à une application est gérée par
+l'application elle-même. Le focus est sur les utilisateurs qui accèdent au cluster
+Kubernetes (humans (administrateur et développeurs) ainsi que des applications (bots))
+
+Pour les bots, on utilise des service accounts. Il n'est pas possible de créer
+nativement des utilisateurs dans Kubernetes. Kubernetes se base sur des fichiers
+externes avec les détails des utilisateurs ou des certificats ou des third party
+identity services tels que le LDAP pour la gestion des utilisateurs.
+
+Toutes les requêtes passent par le kube-apiserver (aussi bien les kubectl que les
+curl https://kube-server-ip:6443). Le kube-apiserver authentifie la requête avant
+de la processer en se basant sur:
+- un fichier statique de mots de passe (fichier csv contenant password, username, userid and optionnellement le group)
+  et en ajoutant l'option --basic-auth-file=user-details.csv au fichier kube-apiserver.service
+- un fichier statique de tokens (fichier csv contenant token, username, userid and optionnellement le group)
+  et en ajoutant l'option --token-auth-file=token-details.csv au fichier kube-apiserver.service
+ou des certificats ou des identity services (LDAP, Kerberos)

@@ -1,0 +1,55 @@
+Vi Shortcuts
+
+📝 Modes dans vi
+Mode normal (par défaut) : pour naviguer, supprimer, copier, etc.
+Mode insertion : pour écrire du texte (i, a, etc.).
+Mode commande : pour sauvegarder, quitter, etc. (:).
+
+🔁 Passage entre les modes
+Action	                                 Touche
+Passer en insertion (avant le curseur)	 i
+Passer en insertion (après le curseur)	 a
+Insertion en début de ligne	             I
+Insertion en fin de ligne	               A
+Insertion sous une nouvelle ligne	       o
+Revenir au mode normal	                 Échap
+
+🎯 Navigation (mode normal)
+Mouvement	                               Touche
+Aller à la ligne n	                     nG ou :n
+Début de ligne	                         0
+Fin de ligne	                           $
+Ligne suivante / précédente	             j / k
+Mot suivant / précédent	                 w / b
+Page suivante / précédente	             Ctrl+d / Ctrl+u
+Aller au début / à la fin du fichier	   gg / G
+
+✂️ Édition de texte
+Action	                                 Touche
+Supprimer caractère sous curseur	       x
+Supprimer mot	                           dw
+Supprimer ligne	                         dd
+Supprimer jusqu’à la fin de ligne	       D
+Copier ligne	                           yy
+Coller (après)	                         p
+Coller (avant)	                         P
+Annuler dernière action	                 u
+Refaire l’action annulée	               Ctrl+r
+Remplacer un caractère	                 r<char>
+Remplacer plusieurs caractères	         R (mode remplacement)
+
+🔍 Recherche
+Action	                                 Touche
+Rechercher mot	                         /mot puis Entrée
+Rechercher vers l’arrière	               ?mot
+Suivant / précédent	                     n / N
+
+💾 Commandes (mode commande : :)
+Commande	                               Signification
+:w	                                     Sauvegarder
+:q	                                     Quitter
+:wq ou ZZ	                               Sauvegarder et quitter
+:q!	                                     Quitter sans sauvegarder
+:e nom_fichier	                         Ouvrir un autre fichier
+:set number	                             Afficher les numéros de ligne
+:set nonumber	                           Masquer les numéros de ligne

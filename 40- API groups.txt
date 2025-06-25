@@ -1,0 +1,34 @@
+API groups
+
+Les API Groups permettent d’organiser les différentes ressources de l’API serveur.
+Cela rend l’API extensible et plus facile à maintenir.
+Chaque ressource Kubernetes (comme pods, deployments, services, etc.) appartient
+à un API group spécifique.
+
+- core (aussi appelé "" – groupe vide) -> /api/v1/pods
+C’est le groupe de base (pas de nom explicite dans l’API).
+Exemple de ressources : pods, services, nodes, configmaps, secrets
+
+- apps -> /apis/apps/v1/deployments
+Gère les objets liés aux déploiements et réplicas.
+Exemple de ressources : deployments, statefulsets, daemonsets, replicasets
+
+- batch -> /apis/batch/v1/jobs
+Pour les jobs et cron jobs.
+Exemple de ressources : jobs, cronjobs
+
+- rbac.authorization.k8s.io -> /apis/rbac.authorization.k8s.io/v1/roles
+Gère les permissions (RBAC).
+Exemple de ressources : roles, rolebindings, clusterroles, clusterrolebindings
+
+- networking.k8s.io -> /apis/networking.k8s.io/v1/ingresses
+Gère les ressources de réseau.
+Exemple de ressources : networkpolicies, ingresses
+
+- apiextensions.k8s.io -> /apis/apiextensions.k8s.io/v1/customresourcedefinitions
+Permet de créer des Custom Resource Definitions (CRDs).
+Exemple de ressources :customresourcedefinitions
+
+- policy -> /apis/policy/v1/poddisruptionbudgets
+Gère certaines politiques de sécurité.
+Exemple de ressources : poddisruptionbudgets
