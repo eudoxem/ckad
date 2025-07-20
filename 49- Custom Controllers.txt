@@ -1,1 +1,84 @@
 Custom Controllers
+
+Un custom controller dans Kubernetes est un programme qui surveille l’état de vos
+objets (custom ou natifs) et agit pour rapprocher l’état actuel de l’état désiré —
+c’est le cœur du pattern “controller/operator”.
+
+🧠 Qu’est-ce qu’un custom controller ?
+Un controller :
+Observe l’état du cluster via l’API Kubernetes.
+Compare cet état à celui souhaité (défini par un manifest YAML, souvent via une Custom Resource).
+Prend des actions correctives pour faire correspondre l’état réel à l’état désiré.
+Un custom controller est souvent couplé avec une Custom Resource Definition (CRD), mais ce n’est pas obligatoire.
+
+🏗 Exemple simple : controller pour MyApp
+1. CRD de MyApp (déjà vue) :
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: myapps.example.com
+spec:
+  group: example.com
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                replicas:
+                  type: integer
+  scope: Namespaced
+  names:
+    plural: myapps
+    singular: myapp
+    kind: MyApp
+
+2. Custom Resource :
+apiVersion: example.com/v1
+kind: MyApp
+metadata:
+  name: demo
+spec:
+  replicas: 2
+
+3. Custom Controller (en Go, pseudo-code simplifié) :
+func reconcile(myApp *MyApp) {
+    // Lire l'état actuel : combien de pods sont créés
+    currentPods := listPodsWithLabel("app", myApp.Name)
+
+    // Lire le nombre désiré
+    desired := myApp.Spec.Replicas
+
+    if len(currentPods) < desired {
+        // Créer des pods
+        for i := len(currentPods); i < desired; i++ {
+            createPodForMyApp(myApp)
+        }
+    } else if len(currentPods) > desired {
+        // Supprimer l'excédent
+        for i := desired; i < len(currentPods); i++ {
+            deletePod(currentPods[i])
+        }
+    }
+}
+En réalité, on utilise souvent Kubebuilder ou Operator SDK pour générer ce code proprement.
+🛠️ Outils pour créer un controller
+
+Outil	Description
+Kubebuilder	Le plus populaire, maintenu par la communauté Kubernetes
+Operator SDK	Plus orienté “Operators” (intégration Ansible/Helm)
+client-go	La librairie officielle en Go pour parler à l’API Kubernetes
+
+🔁 Boucle de Reconciliation
+Un controller agit en boucle :
+
+Reçoit un événement (changement sur un objet).
+Lit l’état actuel.
+Calcule l’écart avec l’état désiré.
+Applique les actions nécessaires.
+Ce modèle est idempotent : on peut exécuter reconcile() plusieurs fois sans effet secondaire.

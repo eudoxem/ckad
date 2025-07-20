@@ -1,1 +1,65 @@
 Custom Resource Definition
+
+En Kubernetes, une Custom Resource Definition (CRD) est un moyen d'étendre les
+fonctionnalités de Kubernetes en ajoutant vos propres types de ressources,
+au-delà des ressources standard comme Pod, Service, ou Deployment.
+
+📘 Qu'est-ce qu'une CRD ?
+Une CRD permet de définir un nouveau type d'objet Kubernetes. Une fois la CRD
+enregistrée, vous pouvez créer des ressources personnalisées (Custom Resources - CR)
+comme vous le feriez avec les objets natifs.
+
+🛠 Exemple simple de CRD
+Voici un exemple de CRD qui définit un type de ressource MyApp :
+
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: myapps.example.com
+spec:
+  group: example.com
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                version:
+                  type: string
+                replicas:
+                  type: integer
+  scope: Namespaced
+  names:
+    plural: myapps
+    singular: myapp
+    kind: MyApp
+    shortNames:
+      - ma
+Une fois cette CRD appliquée (kubectl apply -f crd.yaml), vous pouvez créer des
+ressources MyApp comme suit :
+
+apiVersion: example.com/v1
+kind: MyApp
+metadata:
+  name: my-app-instance
+spec:
+  version: "1.0"
+  replicas: 3
+
+🎯 Utilité des CRD
+Permettent de créer des opérateurs Kubernetes.
+Offrent une API déclarative pour des outils ou services spécifiques.
+Étendent Kubernetes sans modifier le code source du noyau.
+
+🔍 À retenir
+Élément	        Rôle
+group	          Le groupe API (example.com)
+versions	      Liste des versions supportées pour ce type
+names.kind	    Le nom du type d'objet (MyApp)
+scope	          Namespaced ou Cluster (selon si l’objet est lié à un namespace)
+schema	        Décrit la structure du spec (validation via OpenAPI v3)

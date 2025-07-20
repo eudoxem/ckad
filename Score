@@ -1,0 +1,191 @@
+Killer Shell CKAD Simulator Score
+d26a6576-885e-47d9-8a73-ab963b95caf5
+
+This score will be calculated every few minutes
+2025-07-18   (658 minutes ago)
+
+The simulator difficulty is higher compared to the real exam. Most of the simulator questions require good amount of work and can be considered hard. In the real exam you will also face these hard scenarios, just less often. There are probably also fewer questions in the real exam.
+
+
+Solved subtasks:
+57 / 113
+
+Medium Score
+Question 1
+1 of 1
+File /opt/course/1/namespaces contains all namespaces
+
+Question 2
+0 of 5
+Pod is running
+Pod has single container
+Container has correct name
+Container has correct image
+File /opt/course/2/pod1-status-command.sh uses kubectl
+
+Question 3
+6 of 6
+Job created
+Job has succeeded three times
+Job has parallelism of two
+Job has single container
+Container has correct name
+Container has correct image
+
+Question 4
+1 of 5
+Deleted Helm release internal-issue-report-apiv1
+Upgraded Helm release internal-issue-report-apiv2
+Installed Helm release internal-issue-report-apache
+Helm release internal-issue-report-apache has two replicas
+Deleted broken Helm release
+
+Question 5
+0 of 1
+File /opt/course/5/token contains correct token
+
+Question 6
+5 of 5
+Pod is running
+Pod has single container
+Container has correct image
+ReadinessProbe has correct initialDelaySeconds
+ReadinessProbe has correct periodSeconds
+
+Question 7
+6 of 6
+Pod is running in new namespace
+Pod has name labels
+Pod has same amount containers
+Container has same name
+Container has same image
+Old Pod has been removed
+
+Question 8
+4 of 4
+Deployment has 3 replicas
+Deployment has 3 up-to-date replicas
+Container has corrected image
+Rollout has been made
+
+Question 9
+9 of 10
+Deployment exists
+Deployment has 3 replicas
+Deployment has 3 ready replicas
+Deployment has single container
+Container has correct name
+Container has correct image
+Deployment defines correct SecurityContext
+Deployment template has same label as pod
+File /opt/course/9/holy-api-deployment.yaml exists
+Old Pod has been removed
+
+Question 10
+7 of 9
+Service type ClusterIP exists
+Service has correct selector
+Service has correct port
+Pod exists
+Pod is running
+Pod has correct container image
+Pod has correct label
+File /opt/course/10/service_test.html valid
+File /opt/course/10/service_test.log valid
+
+Question 11
+6 of 7
+Dockerfile has been adjusted
+Docker image built with tag
+Docker image pushed to registry with tag
+Podman image built with tag
+Podman image pushed to registry with tag
+Podman container is running
+Podman container produces correct logs and export is in file /opt/course/11/logs
+
+Question 12
+6 of 6
+PersistentVolume exists
+PersistentVolume correct defined
+PersistentVolumeClaim exists
+PersistentVolumeClaim correct defined
+Deployment exists
+Deployment container mounts volume
+
+Question 13
+3 of 6
+StorageClass exists
+StorageClass correct defined
+PersistentVolumeClaim exists
+PersistentVolumeClaim correct defined
+PersistentVolumeClaim status Pending
+File /opt/course/13/pvc-126-reason valid
+
+Question 14
+3 of 8
+Secret secret1 exists
+Secret secret1 correct defined
+Secret secret2 exists
+Pod has secret2 volume
+Pod container mounts secret2 volume
+Pod container ready
+Pod container has secret1 envs
+File /opt/course/14/secret-handler-new.yaml exists
+
+Question 15
+0 of 3
+ConfigMap exists
+ConfigMap correct defined
+Deployment running
+
+Question 16
+0 of 6
+Deployment has new logger sidecar container
+Sidecar container is initContainer with RestartPolicy=Always
+Deployment has two ready replicas
+Deployment logger container correct image
+Deployment logger container correct volumeMount
+File /opt/course/16/cleaner-new.yaml exists
+
+Question 17
+0 of 5
+Deployment exists and replicas ready
+Deployment has new initcontainer
+Initcontainer has correct image
+Pod responds via http
+Pod http respond contains correct text
+
+Question 18
+0 of 2
+Service has correct selector
+Service has Pods as Endpoints
+
+Question 19
+0 of 2
+Service is of type NodePort
+Service NodePort has correct port
+
+Question 20
+0 of 5
+NetworkPolicy exists
+Deployments api and frontend exist with replicas ready
+Deployment frontend cannot reach internet
+Deployment frontend can resolve DNS
+Deployment frontend can reach deployment api
+
+Question 21
+0 of 8
+Deployment has 3 replicas
+Deployment has 3 ready replicas
+Deployment has single container
+Container has correct name
+Container has correct image
+Container has correct resource limits
+Container has correct resource requests
+Template has correct ServiceAccount
+
+Question 22
+0 of 3
+Pods with label type=runner have new labels
+Pods with label type=worker have new labels
+Pods with label protected=true have annotation
